@@ -16,9 +16,23 @@ public class GameManager : MonoBehaviour
     bool isDropping = false;
 
     public float playSpeed;
+    //Hold delay intended to set the length of time a player
+    //may input before scrolling behavior begins.
     [SerializeField]
     [Range(0f, 1f)]
-    float holdDelay = .01f;
+    float horizontalScrollDelay = .01f;
+    [SerializeField]
+    [Range(0f, 1f)]
+    float tapDelay = .02f;
+    //If prevHI is the same as before and horScrollDelay has 
+    //been reached, scrolling behavior is enacted.
+    float prevHorizontalInput;
+    float scrollInputTimer;
+    bool isScrolling = false;
+    //Number of columns traversed per second
+    public int scrollRate = 7;
+    float columnsScrolled = 0f;
+
     int levelNum;
 
 
@@ -44,7 +58,6 @@ public class GameManager : MonoBehaviour
         }
         DontDestroyOnLoad(gameObject);
         #endregion
-
 
     }
 
@@ -81,32 +94,126 @@ public class GameManager : MonoBehaviour
         }
 
         //Horizontal Inputs
-        if(horizontalInput > 0)
+        if(horizontalInput > 0f)
         {
-            //Shift Block right
+            //how long the player has held the horizontal input
+            scrollInputTimer += Time.deltaTime;
+            float numOfColsToScroll = 0f;
+
+            if (prevHorizontalInput > 0f &&
+                scrollInputTimer >= horizontalScrollDelay)
+            {
+                //SCROLL BABY!
+                isScrolling = true;
+
+                /* Multiply the scrollRate by how long the player has 
+                 * held the input, offsetting by the initial scrollDelay.
+                 * This gives how many columns should have been scrolled by now.
+                 * Subtracting this from how many HAVE been traversed will show
+                 * whether we ought to move or not.
+                 */
+                numOfColsToScroll = (scrollRate * (scrollInputTimer - horizontalScrollDelay)) + 1;
+
+            }
+            else if(isScrolling == true)
+            {
+                isScrolling = false;
+                columnsScrolled = 0f;
+            }
+
+            //If we haven't reached the bounds of movement yet...
             if (!currentPlayfield.rightCollider.GetCollisionState())
             {
-                //move right one place
-                activeBlock.transform.localPosition += new Vector3(1f, 0f, 0f);
+                //...and scrolling is detected, and it's been long enough to scroll... move 1 column
+                if (isScrolling && numOfColsToScroll - columnsScrolled >= 1.0f)
+                {
+                    activeBlock.transform.localPosition += new Vector3(1f, 0f, 0f);
+                    columnsScrolled++;
+                }
+                //...and a valid discrete movement is detected... move 1 column
+                else if(!isScrolling && scrollInputTimer <= tapDelay)
+                {
+                    activeBlock.transform.localPosition += new Vector3(1f, 0f, 0f);
+                    columnsScrolled = 0f;
+                }
             }
+            prevHorizontalInput = horizontalInput;
         }
-        else if(horizontalInput < 0 )
+        else if(horizontalInput < 0f )
         {
+            /*
+            scrollInputTimer += Time.deltaTime;
+
             //Shift Block left
-            //if(activeBlock.trasform.position == 
-            //is at least 1 unit away from right boundary){
-            //Active block position + 1 }
             if (!currentPlayfield.leftCollider.GetCollisionState())
             {
-                //move right one place
+                //move left one place
                 activeBlock.transform.localPosition += new Vector3(-1f, 0f, 0f);
             }
+            prevHorizontalInput = horizontalInput;
+            */
+
+            //how long the player has held the horizontal input
+            scrollInputTimer += Time.deltaTime;
+            float numOfColsToScroll = 0f;
+
+            if (prevHorizontalInput < 0f &&
+                scrollInputTimer >= horizontalScrollDelay)
+            {
+                //SCROLL BABY!
+                isScrolling = true;
+
+                /* Multiply the scrollRate by how long the player has 
+                 * held the input, offsetting by the initial scrollDelay.
+                 * This gives how many columns should have been scrolled by now.
+                 * Subtracting this from how many HAVE been traversed will show
+                 * whether we ought to move or not.
+                 */
+                numOfColsToScroll = (scrollRate * (scrollInputTimer - horizontalScrollDelay)) + 1;
+                //+1 on the end for player feel. Makes it so that as soon as the game decides
+                //scrolling is being requested it begins moving.
+            }
+            else if (isScrolling == true)
+            {
+                isScrolling = false;
+                columnsScrolled = 0f;
+            }
+
+            //If we haven't reached the bounds of movement yet...
+            if (!currentPlayfield.leftCollider.GetCollisionState())
+            {
+                //...and scrolling is detected, and it's been long enough to scroll... move 1 column
+                if (isScrolling && numOfColsToScroll - columnsScrolled >= 1.0f)
+                {
+                    activeBlock.transform.localPosition += new Vector3(-1f, 0f, 0f);
+                    columnsScrolled++;
+                }
+                //...and a valid discrete movement is detected... move 1 column
+                else if (!isScrolling && scrollInputTimer <= tapDelay)
+                {
+                    activeBlock.transform.localPosition += new Vector3(-1f, 0f, 0f);
+                    columnsScrolled = 0f;
+                }
+            }
+            prevHorizontalInput = horizontalInput;
+
+        }
+        else
+        {
+            //No horizontal input detected-- reset everything
+            isScrolling = false;
+            scrollInputTimer = 0f;
+            prevHorizontalInput = 0f;
+            print("Scroll Input Timer" + scrollInputTimer);
+            print("Scroll Delay" + horizontalScrollDelay);
+
         }
 
         //Drop Input -- Spacebar
         if (wantDrop > 0)
         {
             //Drop active Block
+
         }
     }
 

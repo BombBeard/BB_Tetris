@@ -15,13 +15,10 @@ public class Brick : MonoBehaviour
      * 5 6 7 
     */
 
-    BoxCollider brickCollider;
-
     // Start is called before the first frame update
     void Start()
     {
         //query all directions for neighbors
-        gameObject.AddComponent<BoxCollider>();
     }
 
     // Update is called once per frame

@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cffb01665ce16b4e86d6bbc5f2ae77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shape: 0
+  shape: 1
   brickPrototype: {fileID: 8405689344383020135, guid: aed2ceffa2bd94640a5573eb19cd55ae,
     type: 3}
 --- !u!4 &162628072
@@ -177,6 +177,7 @@ GameObject:
   - component: {fileID: 748868974}
   - component: {fileID: 748868973}
   - component: {fileID: 748868975}
+  - component: {fileID: 748868977}
   - component: {fileID: 748868976}
   m_Layer: 0
   m_Name: bottom_boundary
@@ -240,6 +241,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &748868977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 748868972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72ead8d4f88f2484d82003a63cf7c0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &843633823
 GameObject:
   m_ObjectHideFlags: 0
@@ -345,7 +358,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentPlayfield: {fileID: 2014571684}
   playSpeed: 0
-  inputDelay: 0.071
+  horizontalScrollDelay: 0.25
+  tapDelay: 0.02
+  scrollRate: 20
   activeBlock: {fileID: 162628071}
 --- !u!4 &994192756
 Transform:
