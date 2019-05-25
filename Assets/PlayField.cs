@@ -4,12 +4,26 @@ using UnityEngine;
 
 public class PlayField : MonoBehaviour
 {
+    public enum BoundaryDirection { left, right, bottom, top};
+
 
     public GameObject prefab;
     public GameObject origin;
+
+    //Each gameObject needs to report collision independently.
+    [SerializeField]
+    public PlayAreaBoundary leftCollider;
+    [SerializeField]
+    public PlayAreaBoundary rightCollider;
+    [SerializeField]
+    public PlayAreaBoundary bottomCollider;
+    [SerializeField]
+    public PlayAreaBoundary topCollider;
+
     // Start is called before the first frame update
     void Start()
     {
+        #region generate wall of blocks for testing
         /*
         if (prefab != null)
         {
@@ -30,10 +44,14 @@ public class PlayField : MonoBehaviour
 
         }
         */
+        #endregion
+
+
     }
     // Update is called once per frame
     void Update()
     {
         
     }
+
 }

@@ -11,6 +11,7 @@ public class Block : MonoBehaviour
     public Brick brickPrototype;
     Brick[] bricks = new Brick[4];
 
+
     private void Awake()
     {
         //todo instantiate blocks
@@ -27,8 +28,8 @@ public class Block : MonoBehaviour
     {
         oldShape = shape;
         SetBlockShape(shape);
-    }
 
+    }
     // Update is called once per frame
     void Update()
     {
