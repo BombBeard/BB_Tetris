@@ -9,7 +9,8 @@ public class Block : MonoBehaviour
     public BlockShape shape;
     BlockShape oldShape;
     public Brick brickPrototype;
-    Brick[] bricks = new Brick[4];
+    [SerializeField] Brick[] bricks = new Brick[4];
+    bool bricksAreNeighbors = false;
 
 
     private void Awake()
@@ -20,7 +21,6 @@ public class Block : MonoBehaviour
             Brick tmpBrick = Instantiate(brickPrototype, transform, false);
             bricks[i] = tmpBrick;
         }
-
     }
 
     // Start is called before the first frame update
@@ -28,7 +28,6 @@ public class Block : MonoBehaviour
     {
         oldShape = shape;
         SetBlockShape(shape);
-
     }
     // Update is called once per frame
     void Update()
@@ -37,6 +36,14 @@ public class Block : MonoBehaviour
         {
             SetBlockShape(shape);
             oldShape = shape;
+        }
+        if (!bricksAreNeighbors)
+        {
+            bricksAreNeighbors = true;
+            for (int i = 0; i < 4; i++)
+            {
+                bricks[i].DiscoverNeighbors();
+            }
         }
     }
 

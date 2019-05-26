@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5814178483174379749}
   - component: {fileID: 5676269915135583644}
   - component: {fileID: 8405689344383020135}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: brick_proto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,3 +121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e8259d3da4bc684c92a16cbb286eed4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  neighbors:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}

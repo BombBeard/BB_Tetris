@@ -4,42 +4,60 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    //todo singleton pattern
     GameManager instance = null;
+
+    #region Inspector Exposed Variables
 
     [SerializeField]
     PlayField currentPlayfield;
 
-    //General game stuff
-    float verticalInput = 0f;
-    float horizontalInput = 0f;
-    bool isDropping = false;
+    #region Player Control Adjustments
 
-    public float playSpeed;
     //Hold delay intended to set the length of time a player
     //may input before scrolling behavior begins.
     [SerializeField]
     [Range(0f, 1f)]
-    float horizontalScrollDelay = .01f;
+    float horizontalScrollDelay = .2f;
+
     [SerializeField]
-    [Range(0f, 1f)]
+    [Range(0f, .3f)]
     float tapDelay = .02f;
-    //If prevHI is the same as before and horScrollDelay has 
-    //been reached, scrolling behavior is enacted.
-    float prevHorizontalInput;
-    float scrollInputTimer;
-    bool isScrolling = false;
-    //Number of columns traversed per second
-    public int scrollRate = 7;
-    float columnsScrolled = 0f;
 
+    public int scrollRate = 20;
+
+    #endregion
+
+    [SerializeField]
     int levelNum;
-
 
     //todo Select which Block is actively controlled by the player
     [SerializeField]
     Block activeBlock;
+
+    #endregion
+
+    #region Helper Variables
+
     Block heldBlock;
+
+    float verticalInput = 0f;
+    float horizontalInput = 0f;
+    //If horizontalInput is the same as prevHorizontalInput, and scrollInputTimer
+    //is >= horizontalScrollDelay, scrolling behavior is enacted.
+    float prevHorizontalInput;
+
+    float fallingTimer = 0f;
+    bool isDropping = false;
+    public float playSpeed; //How fast the blocks are dropping without player input
+
+    float scrollInputTimer;
+    bool isScrolling = false;
+    float columnsScrolled = 0f; //Number of columns traversed per second
+
+    #endregion
+
+
+
 
     //todo Detect a tetris, delete the line(s), drop the bricks.
     
@@ -204,9 +222,6 @@ public class GameManager : MonoBehaviour
             isScrolling = false;
             scrollInputTimer = 0f;
             prevHorizontalInput = 0f;
-            print("Scroll Input Timer" + scrollInputTimer);
-            print("Scroll Delay" + horizontalScrollDelay);
-
         }
 
         //Drop Input -- Spacebar
@@ -215,6 +230,26 @@ public class GameManager : MonoBehaviour
             //Drop active Block
 
         }
+    }
+
+    #endregion
+
+    #region Helper Functions
+
+    //todo implement one of these methods for detecting a tetris
+    //Option 1
+    //Pass in a line number to detect if a tetris is present
+    bool IsLineATetris( int lineNum)
+    {
+        return false;
+    }
+
+    //Option 2
+    //Pass a single block which queries its neighbors horizontally
+    //If returned List<Block> length is 10, then return true.
+    bool IsLineATetris( Block startingBlock)
+    {
+        return false;
     }
 
     #endregion

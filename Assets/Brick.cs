@@ -8,18 +8,14 @@ public class Brick : MonoBehaviour
     //Properties
     Vector2 shapePosition;  //The position of the brick in the shape it belongs to
     Color color;
-    Brick[] neighbors = new Brick[8];
+    [SerializeField] Brick[] neighbors = new Brick[4];
     /* Array compass of neighbors:
-     * 0 1 2  
-     * 3   4
-     * 5 6 7 
+     *   0 
+     * 1   2
+     *   3
     */
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        //query all directions for neighbors
-    }
+    bool debugNeighbors = false;
 
     // Update is called once per frame
     void Update()
@@ -33,14 +29,79 @@ public class Brick : MonoBehaviour
         
     }
 
+    //todo Implement special abilities
     void ActivateSpecial()
     {
 
     }
 
+    public void DiscoverNeighbors()
+    {
+        //IEnumerator for concurrency?
+        //Raycast in 4 directions, assign found bricks to corresponding
+        //array indices, and register with new neighbors
+        //Is called when active block settles,
+        //when a brick is destroyed.
+
+        #region Initialize Neighbors
+        //set up raycast
+        int layermask = 1 << 10;
+        RaycastHit hit;
+
+        //Debug.DrawRay(origin, Vector3.down * .5f, Color.red, 100, false);
+
+        //Is it worth optimizing code to remove effectively duplicate calls?
+        //raycast in cardinal directions
+
+        //Up 
+        Vector3 origin = (transform.position + new Vector3(0f, .49f, 0f));
+        if (Physics.Raycast(origin, Vector3.up, out hit, .5f, layermask))
+        {
+            if(debugNeighbors) print("Up Discovered");
+            neighbors[0] = hit.collider.GetComponent<Brick>();
+            neighbors[0].SetNeighbor(3, this); //duplicate safety assignment
+        }
+        //Down
+        origin = (transform.position + new Vector3(0f, -.49f, 0f));
+        if (Physics.Raycast(origin, Vector3.down, out hit, .5f, layermask))
+        {
+            if (debugNeighbors) print("Down Discovered");
+            neighbors[3] = hit.collider.GetComponent<Brick>();
+            neighbors[3].SetNeighbor(0, this);
+        }
+        //Right
+        origin = (transform.position + new Vector3(.49f, 0f, 0f));
+        if (Physics.Raycast(origin, Vector3.right, out hit, .5f, layermask))
+        {
+            if (debugNeighbors) print("Right Discovered");
+            neighbors[2] = hit.collider.GetComponent<Brick>();
+            neighbors[2].SetNeighbor(1, this);
+        }
+        //Left
+        origin = (transform.position + new Vector3(-.49f, 0f, 0f));
+        if (Physics.Raycast(origin, Vector3.left, out hit, .5f, layermask))
+        {
+            if (debugNeighbors) print("Left Discovered");
+            neighbors[1] = hit.collider.GetComponent<Brick>();
+            neighbors[1].SetNeighbor(2, this);
+        }
+        #endregion
+
+    }
+    void SetNeighbor( int index, Brick brick)
+    {//neighbor may be null
+        /*   0
+         * 1   2
+         *   3
+         */
+        if (debugNeighbors) print("Setting Neighbor");
+        neighbors[index] = brick;
+
+    }
+
     void Destroy()
     {
-
+        //remove references of self from neighbors by assigning null
     }
 
 }
