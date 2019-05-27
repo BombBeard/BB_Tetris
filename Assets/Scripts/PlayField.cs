@@ -54,4 +54,9 @@ public class PlayField : MonoBehaviour
         
     }
 
+    void InitializeLineColliders(int numRows)
+    {
+
+    }
+
 }

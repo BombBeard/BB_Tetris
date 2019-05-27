@@ -6,7 +6,12 @@ public class GameManager : MonoBehaviour
 {
     GameManager instance = null;
 
+    enum GameState { MAINMENU, ACTIVEGAME, PAUSED };
+
     #region Inspector Exposed Variables
+
+    [SerializeField]
+    GameState gameState = GameState.ACTIVEGAME;
 
     [SerializeField]
     PlayField currentPlayfield;
@@ -34,6 +39,9 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     Block activeBlock;
 
+    [SerializeField]
+    bool blockFalling = false;
+
     #endregion
 
     #region Helper Variables
@@ -46,11 +54,21 @@ public class GameManager : MonoBehaviour
     //is >= horizontalScrollDelay, scrolling behavior is enacted.
     float prevHorizontalInput;
 
-    float fallingTimer = 0f;
-    bool isDropping = false;
-    public float playSpeed; //How fast the blocks are dropping without player input
 
-    float scrollInputTimer;
+    #region Block Falling Helper Properties
+
+    bool isDropping = false; //Updated in GameplayInput
+    public bool canFall = true;
+    //How fast the blocks are dropping without player input
+    public float playSpeed = 2f; //Tiles / second
+    public float fallSpeedOffset = 0f; //Meant to provide functionality for future
+    float finalFallSpeed = 0f;
+    float fallTimer = .001f;
+    float numRowsToFall = 0f;
+
+    #endregion
+
+    float scrollInputTimer = .001f;
     bool isScrolling = false;
     float columnsScrolled = 0f; //Number of columns traversed per second
 
@@ -82,9 +100,48 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //during active gameplay
-        if(true) //todo implement game contexts for player control
+        /* If the player is pressing down, there is a fixed
+         * scroll rate. By wrapping this in its own condition
+         * we can eliminate that variable from our calculation.
+         * 
+         * That means for normal operation, final fallingRate
+         * is simply a scroll operation. However, embed a
+         * stubbed out offset for unique brick effects.
+         */
+
+        fallTimer += Time.deltaTime;
+
+        if (gameState == GameState.ACTIVEGAME)
+        {
             GameplayInput();
+
+            /* Blocks don't always fall.
+             * We need to check whether it's possible to fall, at all.
+             * A piece in limbo may rotate, move horizontally, but not fall.
+             * SoooooooooOoOooOOoooOO... Check if it's in limbo
+             */
+            #region Falling Conditionals
+
+            UpdateCanFall();
+            if (canFall && isDropping)
+            {
+                //Scroll Speed Drop
+            }
+            else if(canFall)
+            {
+                //Fall normal speed
+                UpdateFallSpeed();
+                if( (numRowsToFall = finalFallSpeed * fallTimer ) >= 1f)
+                {
+                    activeBlock.transform.localPosition += new Vector3(0f, -Mathf.Floor(numRowsToFall), 0f);
+                    fallTimer = .001f;
+                }
+            }
+            #endregion
+        }
+        else if (gameState == GameState.MAINMENU) { }
+        else if (gameState == GameState.PAUSED) { }
+
         
         //menu navigation...
 
@@ -235,6 +292,65 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Helper Functions
+
+    void UpdateFallSpeed()
+    {
+        /* Meant to be called when the speed is altered elsewhere.
+         * This allows for block falling speed to be altered a bit
+         * more simply.
+         * 
+         * This function assumes that everything it will check is already updated
+         * and ready for calculations. 
+         */
+
+        finalFallSpeed = playSpeed + fallSpeedOffset;
+    }
+
+    void UpdateCanFall()
+    {
+        RaycastHit hit;
+        int layermask = 1 << 10;
+        Vector3 origin;
+
+        for (int i = 0; i < activeBlock.scoutBricks.Count; i++)
+        {
+            origin = (activeBlock.scoutBricks[i].transform.position + new Vector3(0f, -.49f, 0f));
+            if (activeBlock.isAtFloor)
+            {
+                canFall = false;
+
+            }
+            else if (Physics.Raycast(origin, Vector3.down, out hit, Mathf.Infinity, layermask))
+            {
+                if (hit.collider.gameObject != activeBlock.gameObject)
+                {
+                    print("Distance: " + (Mathf.Abs(Vector3.Distance(hit.collider.transform.position, activeBlock.scoutBricks[i].transform.position))));
+                    //Debug.Log(hit.collider.GetComponentInParent<Block>().name);
+                    if (Mathf.Abs(Vector3.Distance(hit.collider.transform.position, activeBlock.scoutBricks[i].transform.position)) <= 1.05f)
+                    {
+                        //Is adjacent to a foreign brick.
+                        //Enter Limbo!
+                        canFall = false;
+                    }
+                    else
+                    {
+                        canFall = true;
+                    }
+                }
+            }
+            else
+            {
+                canFall = true;
+            }
+        }
+        //Scouts recon!@
+    }
+
+    void RotateActiveBlock()
+    {
+        activeBlock.UpdateScoutBlocks();
+        //todo rotate the block
+    }
 
     //todo implement one of these methods for detecting a tetris
     //Option 1

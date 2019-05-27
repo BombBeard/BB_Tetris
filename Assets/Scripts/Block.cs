@@ -4,17 +4,21 @@ using UnityEngine;
 
 public class Block : MonoBehaviour
 {
-    public enum BlockShape { I, J, L, O, S, T, Z };
+    public enum BlockShape { I, J, L, O, S, T, Z, BUCKET};
 
     public BlockShape shape;
+    public int numBricks = 4;
     BlockShape oldShape;
     public Brick brickPrototype;
-    [SerializeField] Brick[] bricks = new Brick[4];
+    [SerializeField] Brick[] bricks;
+    public List<Brick> scoutBricks = new List<Brick>();
     bool bricksAreNeighbors = false;
+    public bool isAtFloor = false;
 
 
     private void Awake()
     {
+        bricks = new Brick[numBricks];
         //todo instantiate blocks
         for (int i = 0; i < 4; i++)
         {
@@ -32,6 +36,7 @@ public class Block : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (shape != oldShape)
         {
             SetBlockShape(shape);
@@ -39,6 +44,7 @@ public class Block : MonoBehaviour
         }
         if (!bricksAreNeighbors)
         {
+            UpdateScoutBlocks();
             bricksAreNeighbors = true;
             for (int i = 0; i < 4; i++)
             {
@@ -69,4 +75,40 @@ public class Block : MonoBehaviour
     {
 
     }
+
+    public void UpdateScoutBlocks()
+    {
+        int layermask = 1 << 10;
+        RaycastHit hit;
+        Vector3 origin;
+
+        for (int i = 0; i < numBricks; i++)
+        {
+            origin = (bricks[i].transform.position + new Vector3(0f, -.49f, 0f));
+            if (Physics.Raycast(origin, Vector3.down, out hit, .5f, layermask))
+            {
+                if (!hit.collider.gameObject == gameObject)
+                {
+                    print("hit a neighbor");
+                    if(!scoutBricks.Contains(bricks[i]))
+                        scoutBricks.Add(bricks[i]);
+                }
+                else
+                {
+                    if(scoutBricks.Contains(bricks[i]))
+                        scoutBricks.Remove(bricks[i]);
+                    //If weird shit is happening near non-brick colliders
+                    //Assume you need to check what type of object you're colliding with.
+                }
+            }
+            else
+            {
+                if (!scoutBricks.Contains(bricks[i]))
+                    scoutBricks.Add(bricks[i]);
+            }
+        }
+
+
+    }
+
 }

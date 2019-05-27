@@ -5,9 +5,6 @@ using UnityEngine;
 public class Brick : MonoBehaviour
 {
 
-    //Properties
-    Vector2 shapePosition;  //The position of the brick in the shape it belongs to
-    Color color;
     [SerializeField] Brick[] neighbors = new Brick[4];
     /* Array compass of neighbors:
      *   0 
@@ -15,12 +12,16 @@ public class Brick : MonoBehaviour
      *   3
     */
 
+    Color color;
+
+
+    
+
     bool debugNeighbors = false;
 
     // Update is called once per frame
     void Update()
     {
-        FallCheck(); //todo listen for delegate instead of frame checking
     }
 
     void FallCheck()
