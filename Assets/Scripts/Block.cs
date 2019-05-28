@@ -11,16 +11,21 @@ public class Block : MonoBehaviour
     BlockShape oldShape;
     public Brick brickPrototype;
     [SerializeField] Brick[] bricks;
-    public List<Brick> scoutBricks = new List<Brick>();
+    public List<Brick> scoutBricks = new List<Brick>(); //bottom facing bricks
+    public List<Brick> leftBumperBricks = new List<Brick>(); //left outward facing bricks
+    public List<Brick> rightBumperBricks = new List<Brick>(); //right outward facing bricks
+    public Brick pivotBrick;
     bool bricksAreNeighbors = false;
+    [HideInInspector]
     public bool isAtFloor = false;
+
 
 
     private void Awake()
     {
         bricks = new Brick[numBricks];
         //todo instantiate blocks
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < numBricks; i++)
         {
             Brick tmpBrick = Instantiate(brickPrototype, transform, false);
             bricks[i] = tmpBrick;
@@ -44,7 +49,7 @@ public class Block : MonoBehaviour
         }
         if (!bricksAreNeighbors)
         {
-            UpdateScoutBlocks();
+            UpdateScoutAndBumperBlocks();
             bricksAreNeighbors = true;
             for (int i = 0; i < 4; i++)
             {
@@ -76,7 +81,14 @@ public class Block : MonoBehaviour
 
     }
 
-    public void UpdateScoutBlocks()
+
+    /* Optimization possibility:
+     * If rotation becomes too intensive due to updating which bricks 
+     * are scouts, consider hard-coding which bricks are scouts 
+     * in which orientation. This is annoying with blocks which contain
+     * more than 4 bricks, but would reduce the number instructions dramatically.
+     */
+    public void UpdateScoutAndBumperBlocks()
     {
         int layermask = 1 << 10;
         RaycastHit hit;
@@ -85,11 +97,11 @@ public class Block : MonoBehaviour
         for (int i = 0; i < numBricks; i++)
         {
             origin = (bricks[i].transform.position + new Vector3(0f, -.49f, 0f));
+            //Check for bottom-facing scouts
             if (Physics.Raycast(origin, Vector3.down, out hit, .5f, layermask))
             {
                 if (!hit.collider.gameObject == gameObject)
                 {
-                    print("hit a neighbor");
                     if(!scoutBricks.Contains(bricks[i]))
                         scoutBricks.Add(bricks[i]);
                 }
@@ -106,9 +118,52 @@ public class Block : MonoBehaviour
                 if (!scoutBricks.Contains(bricks[i]))
                     scoutBricks.Add(bricks[i]);
             }
+            //Check for left-facing bumper bricks
+            origin = (bricks[i].transform.position + new Vector3(-.49f, 0f, 0f));
+            if (Physics.Raycast(origin, Vector3.left, out hit, .5f, layermask))
+            {
+                if (!hit.collider.gameObject == gameObject)
+                {
+                    if(!leftBumperBricks.Contains(bricks[i]))
+                        leftBumperBricks.Add(bricks[i]);
+                }
+                else
+                {
+                    if(leftBumperBricks.Contains(bricks[i]))
+                        leftBumperBricks.Remove(bricks[i]);
+                    //If weird shit is happening near non-brick colliders
+                    //Assume you need to check what type of object you're colliding with.
+                }
+            }
+            else
+            {
+                if (!leftBumperBricks.Contains(bricks[i]))
+                    leftBumperBricks.Add(bricks[i]);
+            }
+            //Check for right-facing bumper bricks
+            origin = (bricks[i].transform.position + new Vector3(.49f, 0f, 0f));
+            if (Physics.Raycast(origin, Vector3.right, out hit, .5f, layermask))
+            {
+                if (!hit.collider.gameObject == gameObject)
+                {
+                    if(!rightBumperBricks.Contains(bricks[i]))
+                        rightBumperBricks.Add(bricks[i]);
+                }
+                else
+                {
+                    if(rightBumperBricks.Contains(bricks[i]))
+                        rightBumperBricks.Remove(bricks[i]);
+                    //If weird shit is happening near non-brick colliders
+                    //Assume you need to check what type of object you're colliding with.
+                }
+            }
+            else
+            {
+                if (!rightBumperBricks.Contains(bricks[i]))
+                    rightBumperBricks.Add(bricks[i]);
+            }
+
         }
-
-
-    }
+    }//End UpdateScoutAndBumperBlcoks()
 
 }

@@ -155,6 +155,8 @@ public class GameManager : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal");
         float wantDrop = Input.GetAxis("Drop");
 
+        #region Rotation Input
+
         //Vertical Inputs -- Up: rotate, Down: quick descent
         if(verticalInput > 0)
         {
@@ -168,8 +170,11 @@ public class GameManager : MonoBehaviour
 
         }
 
-        //Horizontal Inputs
-        if(horizontalInput > 0f)
+        #endregion
+
+        #region Horizontal Inputs
+
+        if (horizontalInput > 0f && !isABlockHorizontal(Vector3.right))
         {
             //how long the player has held the horizontal input
             scrollInputTimer += Time.deltaTime;
@@ -214,19 +219,8 @@ public class GameManager : MonoBehaviour
             }
             prevHorizontalInput = horizontalInput;
         }
-        else if(horizontalInput < 0f )
+        else if(horizontalInput < 0f && !isABlockHorizontal(Vector3.left) )
         {
-            /*
-            scrollInputTimer += Time.deltaTime;
-
-            //Shift Block left
-            if (!currentPlayfield.leftCollider.GetCollisionState())
-            {
-                //move left one place
-                activeBlock.transform.localPosition += new Vector3(-1f, 0f, 0f);
-            }
-            prevHorizontalInput = horizontalInput;
-            */
 
             //how long the player has held the horizontal input
             scrollInputTimer += Time.deltaTime;
@@ -281,13 +275,15 @@ public class GameManager : MonoBehaviour
             prevHorizontalInput = 0f;
         }
 
+        #endregion Horizontal Input
+
         //Drop Input -- Spacebar
         if (wantDrop > 0)
         {
             //Drop active Block
 
         }
-    }
+    } //End GameplayInput()
 
     #endregion
 
@@ -324,31 +320,77 @@ public class GameManager : MonoBehaviour
             {
                 if (hit.collider.gameObject != activeBlock.gameObject)
                 {
-                    print("Distance: " + (Mathf.Abs(Vector3.Distance(hit.collider.transform.position, activeBlock.scoutBricks[i].transform.position))));
+                    //print("Distance: " + (Mathf.Abs(Vector3.Distance(hit.collider.transform.position, activeBlock.scoutBricks[i].transform.position))));
                     //Debug.Log(hit.collider.GetComponentInParent<Block>().name);
+
+                    //Distance is measured from the centers of Bricks.
                     if (Mathf.Abs(Vector3.Distance(hit.collider.transform.position, activeBlock.scoutBricks[i].transform.position)) <= 1.05f)
                     {
                         //Is adjacent to a foreign brick.
                         //Enter Limbo!
                         canFall = false;
+                        return;
                     }
                     else
                     {
-                        canFall = true;
+                        if (!canFall)
+                        {
+                            canFall = true;
+                            fallTimer = 0f;
+                        }
                     }
                 }
             }
             else
             {
-                canFall = true;
+                if (!canFall)
+                {
+                    canFall = true;
+                    fallTimer = 0f;
+                }
             }
         }
         //Scouts recon!@
     }
 
+    bool isABlockHorizontal(Vector3 scoutDirection)
+    {//Returns true when there is a brick in the way
+        RaycastHit hit;
+        Vector3 origin;
+        int layermask = 1 << 10;
+
+        if(scoutDirection == Vector3.left)
+        {
+            foreach (Brick b in activeBlock.leftBumperBricks)
+            {
+                origin = b.transform.position + new Vector3(-.49f, 0f, 0f);
+
+                if(Physics.Raycast( origin, scoutDirection, out hit, .5f, layermask))
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            foreach (Brick b in activeBlock.rightBumperBricks)
+            {
+                origin = b.transform.position + new Vector3(.49f, 0f, 0f);
+
+                if (Physics.Raycast(origin, scoutDirection, out hit, .5f, layermask))
+                {
+                    return true;
+                }
+            }
+        }
+
+
+        return false;
+    }
+
     void RotateActiveBlock()
     {
-        activeBlock.UpdateScoutBlocks();
+        activeBlock.UpdateScoutAndBumperBlocks();
         //todo rotate the block
     }
 

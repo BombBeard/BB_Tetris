@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cffb01665ce16b4e86d6bbc5f2ae77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shape: 0
+  shape: 1
   numBricks: 4
   brickPrototype: {fileID: 8405689344383020135, guid: aed2ceffa2bd94640a5573eb19cd55ae,
     type: 3}
@@ -159,6 +159,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   scoutBricks: []
+  leftBumperBricks: []
+  rightBumperBricks: []
+  pivotBrick: {fileID: 0}
   isAtFloor: 0
 --- !u!4 &162628072
 Transform:
@@ -442,6 +445,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   scoutBricks: []
+  leftBumperBricks: []
+  rightBumperBricks: []
+  pivotBrick: {fileID: 0}
   isAtFloor: 0
 --- !u!1 &1580180152
 GameObject:
