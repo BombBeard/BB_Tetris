@@ -149,7 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cffb01665ce16b4e86d6bbc5f2ae77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shape: 1
+  shape: 0
   numBricks: 4
   brickPrototype: {fileID: 8405689344383020135, guid: aed2ceffa2bd94640a5573eb19cd55ae,
     type: 3}
@@ -162,6 +162,7 @@ MonoBehaviour:
   leftBumperBricks: []
   rightBumperBricks: []
   pivotBrick: {fileID: 0}
+  pivotPoint: {x: 0, y: 0, z: 0}
   isAtFloor: 0
 --- !u!4 &162628072
 Transform:
@@ -376,8 +377,9 @@ MonoBehaviour:
   activeBlock: {fileID: 162628071}
   blockFalling: 0
   canFall: 1
-  playSpeed: 4.94
+  playSpeed: 0.5
   fallSpeedOffset: 0
+  rotateInputDelay: 0.02
 --- !u!4 &994192756
 Transform:
   m_ObjectHideFlags: 0
@@ -448,6 +450,65 @@ MonoBehaviour:
   leftBumperBricks: []
   rightBumperBricks: []
   pivotBrick: {fileID: 0}
+  pivotPoint: {x: 0, y: 0, z: 0}
+  isAtFloor: 0
+--- !u!1 &1308631648
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1308631649}
+  - component: {fileID: 1308631650}
+  m_Layer: 0
+  m_Name: Block_Proto (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1308631649
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308631648}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 7, y: -19, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1888569384}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1308631650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1308631648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cffb01665ce16b4e86d6bbc5f2ae77e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shape: 3
+  numBricks: 4
+  brickPrototype: {fileID: 8405689344383020135, guid: aed2ceffa2bd94640a5573eb19cd55ae,
+    type: 3}
+  bricks:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  scoutBricks: []
+  leftBumperBricks: []
+  rightBumperBricks: []
+  pivotBrick: {fileID: 0}
+  pivotPoint: {x: 0, y: 0, z: 0}
   isAtFloor: 0
 --- !u!1 &1580180152
 GameObject:
@@ -638,11 +699,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888569382}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.45, y: 0.5, z: -1}
+  m_LocalPosition: {x: -0.45, y: 0.475, z: -1}
   m_LocalScale: {x: 0.1, y: 0.05, z: 1}
   m_Children:
   - {fileID: 162628072}
   - {fileID: 1204276145}
+  - {fileID: 1308631649}
   m_Father: {fileID: 2014571683}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

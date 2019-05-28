@@ -66,6 +66,10 @@ public class GameManager : MonoBehaviour
     float fallTimer = .001f;
     float numRowsToFall = 0f;
 
+    public float rotateInputDelay = .2f;
+    float rotateInputTimer = .2f;
+    float prevRotateInput = 0f;
+
     #endregion
 
     float scrollInputTimer = .001f;
@@ -110,6 +114,9 @@ public class GameManager : MonoBehaviour
          */
 
         fallTimer += Time.deltaTime;
+        rotateInputTimer += Time.deltaTime;
+
+
 
         if (gameState == GameState.ACTIVEGAME)
         {
@@ -158,16 +165,36 @@ public class GameManager : MonoBehaviour
         #region Rotation Input
 
         //Vertical Inputs -- Up: rotate, Down: quick descent
-        if(verticalInput > 0)
+        if (verticalInput > 0)
         {
-            //Rotate piece clockwise
-
-
+            if (prevRotateInput == 0f)
+            {
+                print(prevRotateInput);
+                //Rotate piece clockwise
+                activeBlock.transform.RotateAround(
+                    activeBlock.pivotBrick.transform.position,
+                    Vector3.forward,
+                    90);
+                /*
+                for (int i = 0; i < activeBlock.numBricks; i++)
+                {
+                    activeBlock.bricks[i].transform.Rotate(new Vector3(0f, 0f, 90));
+                }
+                */
+                activeBlock.UpdateScoutAndBumperBlocks();
+                // rotateInputTimer = 0f;
+            }
+            prevRotateInput = verticalInput;
         }
         else if(verticalInput < 0)
         {
             //Double rate of descent
 
+        }
+        else
+        {
+            //rotateInputTimer = 0f;
+            prevRotateInput = 0f;
         }
 
         #endregion
@@ -314,7 +341,6 @@ public class GameManager : MonoBehaviour
             if (activeBlock.isAtFloor)
             {
                 canFall = false;
-
             }
             else if (Physics.Raycast(origin, Vector3.down, out hit, Mathf.Infinity, layermask))
             {

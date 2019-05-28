@@ -10,11 +10,13 @@ public class Block : MonoBehaviour
     public int numBricks = 4;
     BlockShape oldShape;
     public Brick brickPrototype;
-    [SerializeField] Brick[] bricks;
+    public Brick[] bricks;
     public List<Brick> scoutBricks = new List<Brick>(); //bottom facing bricks
     public List<Brick> leftBumperBricks = new List<Brick>(); //left outward facing bricks
     public List<Brick> rightBumperBricks = new List<Brick>(); //right outward facing bricks
     public Brick pivotBrick;
+    public Vector3 pivotPoint = new Vector3(0f,0f,0f);
+    //public GameObject pivotParent;
     bool bricksAreNeighbors = false;
     [HideInInspector]
     public bool isAtFloor = false;
@@ -30,6 +32,7 @@ public class Block : MonoBehaviour
             Brick tmpBrick = Instantiate(brickPrototype, transform, false);
             bricks[i] = tmpBrick;
         }
+        //pivotParent = new GameObject();
     }
 
     // Start is called before the first frame update
@@ -37,6 +40,9 @@ public class Block : MonoBehaviour
     {
         oldShape = shape;
         SetBlockShape(shape);
+        //pivotParent.transform.parent = transform.parent;
+        //transform.parent = pivotParent.transform;
+        
     }
     // Update is called once per frame
     void Update()
@@ -62,13 +68,71 @@ public class Block : MonoBehaviour
     {
         if (shape == BlockShape.I)
         {
-            bricks[0].transform.localPosition = new Vector3(0, 2.5f, 0);
-            bricks[1].transform.localPosition = new Vector3(0, 1.5f, 0);
-            bricks[2].transform.localPosition = new Vector3(0, .5f, 0);
-            bricks[3].transform.localPosition = new Vector3(0, -.5f, 0);
+            /* XOXX
+             */
+            bricks[0].transform.localPosition = new Vector3(2f, 0f, 0);
+            bricks[1].transform.localPosition = new Vector3(1f, 0f, 0);
+            pivotBrick = bricks[1];
+            bricks[2].transform.localPosition = new Vector3(0f, 0f, 0);
+            bricks[3].transform.localPosition = new Vector3(-1f, 0f, 0);
         }
         if (shape == BlockShape.J)
         {
+            /* X
+             * XOX
+             */
+            bricks[0].transform.localPosition = new Vector3(-1f, 1f, 0);
+            bricks[1].transform.localPosition = new Vector3(-1f, 0f, 0);
+            bricks[2].transform.localPosition = new Vector3(0, 0f, 0);
+            bricks[3].transform.localPosition = new Vector3(1f, 0f, 0);
+        }
+        if (shape == BlockShape.L)
+        {
+            /*   X
+             * XOX
+             */
+            bricks[0].transform.localPosition = new Vector3(0, 1.5f, 0);
+            bricks[1].transform.localPosition = new Vector3(0, .5f, 0);
+            bricks[2].transform.localPosition = new Vector3(0, -.5f, 0);
+            bricks[3].transform.localPosition = new Vector3(-1f, -.5f, 0);
+        }
+        if (shape == BlockShape.O)
+        {//Pivot point, O, is not associated with a brick, but merely in the center.
+            /* XX
+             * XX
+             */
+            bricks[0].transform.localPosition = new Vector3(-1f, 1f, 0);
+            bricks[1].transform.localPosition = new Vector3(-1f, 0f, 0);
+            bricks[2].transform.localPosition = new Vector3(0f, 1f, 0);
+            bricks[3].transform.localPosition = new Vector3(0f, 0f, 0);
+        }
+        if (shape == BlockShape.S)
+        {
+            /*  X
+             * XO
+             * X
+             */
+            bricks[0].transform.localPosition = new Vector3(0, 1.5f, 0);
+            bricks[1].transform.localPosition = new Vector3(0, .5f, 0);
+            bricks[2].transform.localPosition = new Vector3(0, -.5f, 0);
+            bricks[3].transform.localPosition = new Vector3(-1f, -.5f, 0);
+        }
+        if (shape == BlockShape.Z)
+        {
+            /* X
+             * OX
+             *  X
+             */
+            bricks[0].transform.localPosition = new Vector3(0, 1.5f, 0);
+            bricks[1].transform.localPosition = new Vector3(0, .5f, 0);
+            bricks[2].transform.localPosition = new Vector3(0, -.5f, 0);
+            bricks[3].transform.localPosition = new Vector3(-1f, -.5f, 0);
+        }
+        if (shape == BlockShape.T)
+        {
+            /*  X
+             * XOX
+             */
             bricks[0].transform.localPosition = new Vector3(0, 1.5f, 0);
             bricks[1].transform.localPosition = new Vector3(0, .5f, 0);
             bricks[2].transform.localPosition = new Vector3(0, -.5f, 0);
@@ -98,6 +162,8 @@ public class Block : MonoBehaviour
         {
             origin = (bricks[i].transform.position + new Vector3(0f, -.49f, 0f));
             //Check for bottom-facing scouts
+            Debug.DrawRay(origin, Vector3.down * .5f, Color.red, 1f, false);
+
             if (Physics.Raycast(origin, Vector3.down, out hit, .5f, layermask))
             {
                 if (!hit.collider.gameObject == gameObject)
@@ -107,8 +173,11 @@ public class Block : MonoBehaviour
                 }
                 else
                 {
-                    if(scoutBricks.Contains(bricks[i]))
+                    if (scoutBricks.Contains(bricks[i]))
+                    {
                         scoutBricks.Remove(bricks[i]);
+                        print("removing");
+                    }
                     //If weird shit is happening near non-brick colliders
                     //Assume you need to check what type of object you're colliding with.
                 }
